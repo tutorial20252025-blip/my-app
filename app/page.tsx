@@ -39,7 +39,6 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import SparklesIcon from '@mui/icons-material/AutoAwesome';
 import StarsIcon from '@mui/icons-material/Stars';
 import HeartBrokenIcon from '@mui/icons-material/FavoriteBorder';
-import HeartIcon from '@mui/icons-material/Favorite';
 import Confetti from 'react-confetti';
 import { useWindowSize } from 'react-use';
 
@@ -439,9 +438,9 @@ export default function PremiumBirthdayGreeting() {
           </Box>
         </motion.div>
 
-        <Grid container spacing={4}>
+        <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 4 }}>
           {/* Input Form */}
-          <Grid item xs={12} md={6}>
+          <Box sx={{ flex: 1 }}>
             <Slide direction="right" in={!isSubmitted} mountOnEnter unmountOnExit>
               <GlassCard>
                 <CardContent sx={{ p: { xs: 3, md: 4 } }}>
@@ -630,10 +629,10 @@ export default function PremiumBirthdayGreeting() {
                 </CardContent>
               </GlassCard>
             </Slide>
-          </Grid>
+          </Box>
 
           {/* Message Display */}
-          <Grid item xs={12} md={6}>
+          <Box sx={{ flex: 1 }}>
             <AnimatePresence mode="wait">
               {isSubmitted ? (
                 <motion.div
@@ -813,8 +812,8 @@ export default function PremiumBirthdayGreeting() {
                 </motion.div>
               )}
             </AnimatePresence>
-          </Grid>
-        </Grid>
+          </Box>
+        </Box>
 
         {/* Footer */}
         <motion.div
