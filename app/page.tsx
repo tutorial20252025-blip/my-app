@@ -10,11 +10,7 @@ import {
   Box,
   Card,
   CardContent,
-  CardMedia,
   IconButton,
-  Fade,
-  Zoom,
-  Grow,
   Stepper,
   Step,
   StepLabel,
@@ -33,51 +29,96 @@ import {
   Alert,
   useTheme,
   alpha,
-  Grid
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Checkbox,
+  FormControlLabel,
+  Radio,
+  RadioGroup,
+  FormLabel,
+  Slider,
+  Rating,
+  Switch,
+  LinearProgress,
+  CircularProgress,
+  Tabs,
+  Tab,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  Badge,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow
 } from '@mui/material';
-
-
 import {
-  Favorite,
-  Cake,
+  Person,
+  School,
+  Computer,
+  Email,
+  Phone,
+  CalendarToday,
+  LocationOn,
+  Code,
   Star,
-  MusicNote,
-  EmojiEmotions,
-  Send,
-  Celebration,
-  LocalFlorist,
-  Restaurant,
-  CardGiftcard,
-  FavoriteBorder,
-  PhotoCamera,
-  Close,
+  CheckCircle,
+  Cancel,
+  Edit,
+  Delete,
+  Download,
+  Upload,
+  Search,
+  FilterList,
+  Sort,
+  Group,
+  Assignment,
+  Book,
+  Schedule,
+  Payment,
+  Security,
+  Lock,
+  VerifiedUser,
   ArrowForward,
-  FlashOn
+  ArrowBack,
+  ExpandMore,
+  Add,
+  Remove,
+  Visibility,
+  VisibilityOff,
+  Notifications,
+  Favorite,
+  TrendingUp,
+  Analytics,
+  Close  // ADDED THIS IMPORT
 } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
 
 const ColorfulButton = styled(Button)(({ theme }) => ({
-  background: `linear-gradient(45deg, ${theme.palette.primary.main} 30%, ${theme.palette.secondary.main} 90%)`,
+  background: `linear-gradient(45deg, ${theme.palette.primary.main} 30%, ${theme.palette.info.main} 90%)`,
   border: 0,
-  borderRadius: 50,
+  borderRadius: 8,
   color: 'white',
   height: 48,
   padding: '0 30px',
   fontWeight: 'bold',
-  boxShadow: `0 3px 5px 2px ${alpha(theme.palette.primary.main, 0.3)}`,
+  boxShadow: `0 3px 5px 2px ${alpha(theme.palette.primary.main, 0.2)}`,
   '&:hover': {
     transform: 'translateY(-2px)',
-    boxShadow: `0 5px 10px 2px ${alpha(theme.palette.primary.main, 0.5)}`,
+    boxShadow: `0 5px 15px 2px ${alpha(theme.palette.primary.main, 0.3)}`,
   },
   transition: 'all 0.3s ease-in-out',
 }));
 
-const AnimatedPaper = styled(Paper)(({ theme }) => ({
+const ProfessionalPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(4),
   margin: theme.spacing(2),
-  borderRadius: 20,
-  background: `linear-gradient(135deg, ${alpha(theme.palette.background.paper, 0.9)} 0%, ${alpha(theme.palette.secondary.light, 0.1)} 100%)`,
-  backdropFilter: 'blur(10px)',
+  borderRadius: 12,
+  background: `linear-gradient(135deg, ${alpha(theme.palette.background.paper, 0.95)} 0%, ${alpha(theme.palette.grey[50], 0.1)} 100%)`,
   border: `1px solid ${alpha(theme.palette.primary.main, 0.1)}`,
   position: 'relative',
   overflow: 'hidden',
@@ -92,57 +133,129 @@ const AnimatedPaper = styled(Paper)(({ theme }) => ({
   },
 }));
 
-const FloatingHeart = styled(Box)(({ theme }) => ({
-  position: 'absolute',
-  animation: 'float 3s ease-in-out infinite',
-  color: theme.palette.error.main,
-  '@keyframes float': {
-    '0%, 100%': { transform: 'translateY(0px)' },
-    '50%': { transform: 'translateY(-20px)' },
+const StudentCard = styled(Card)(({ theme }) => ({
+  transition: 'all 0.3s ease',
+  '&:hover': {
+    transform: 'translateY(-5px)',
+    boxShadow: `0 8px 25px ${alpha(theme.palette.primary.main, 0.15)}`,
   },
 }));
 
-const steps = ['Enter Details', 'Customize Wish', 'Preview & Send'];
+const steps = ['Personal Information', 'Academic Details', 'Course Selection', 'Review & Submit'];
 
-export default function BirthdayWishPage() {
+const programmingLanguages = [
+  'JavaScript',
+  'Python',
+  'Java',
+  'C++',
+  'C#',
+  'Ruby',
+  'Go',
+  'Rust',
+  'TypeScript',
+  'Swift',
+  'Kotlin'
+];
+
+const courseModules = [
+  { id: 'web-dev', name: 'Web Development', duration: '12 weeks', level: 'Intermediate' },
+  { id: 'mobile-dev', name: 'Mobile Development', duration: '10 weeks', level: 'Advanced' },
+  { id: 'data-science', name: 'Data Science', duration: '14 weeks', level: 'Intermediate' },
+  { id: 'ai-ml', name: 'AI & Machine Learning', duration: '16 weeks', level: 'Advanced' },
+  { id: 'devops', name: 'DevOps & Cloud', duration: '10 weeks', level: 'Intermediate' },
+  { id: 'cybersecurity', name: 'Cybersecurity', duration: '12 weeks', level: 'Advanced' },
+];
+
+const timeSlots = [
+  'Monday 9:00 AM - 12:00 PM',
+  'Tuesday 2:00 PM - 5:00 PM',
+  'Wednesday 6:00 PM - 9:00 PM',
+  'Thursday 10:00 AM - 1:00 PM',
+  'Friday 3:00 PM - 6:00 PM',
+  'Saturday 9:00 AM - 12:00 PM'
+];
+
+export default function StudentRegistrationPage() {
   const theme = useTheme();
   const [activeStep, setActiveStep] = useState(0);
-  const [showWish, setShowWish] = useState(false);
+  const [tabValue, setTabValue] = useState(0);
   const [openDialog, setOpenDialog] = useState(false);
-  const [snackbar, setSnackbar] = useState({ open: false, message: '' });
+  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' as 'success' | 'error' | 'info' | 'warning' });
+  const [searchTerm, setSearchTerm] = useState('');
+  const [students, setStudents] = useState<any[]>([]);
+  const [showPassword, setShowPassword] = useState(false);
 
   const [formData, setFormData] = useState({
-    girlfriendName: '',
-    yourName: '',
-    yearsTogether: '',
-    specialMemory: '',
-    favoriteColor: '#ff4081',
-    message: 'You make every moment magical. Happy Birthday to the most amazing person in my life!',
-    date: new Date().toISOString().split('T')[0],
-  });
-
-  const [wishData, setWishData] = useState({
-    showMusic: true,
-    showPhotos: true,
-    showCountdown: true,
-    animationType: 'hearts',
+    // Personal Information
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    dateOfBirth: '',
+    address: '',
+    city: '',
+    country: '',
+    
+    // Academic Details
+    highestEducation: '',
+    institution: '',
+    graduationYear: '',
+    gpa: '',
+    programmingExperience: 0,
+    knownLanguages: [] as string[],
+    githubProfile: '',
+    linkedinProfile: '',
+    
+    // Course Selection
+    selectedCourses: [] as string[],
+    preferredTimeSlot: '',
+    startDate: '',
+    paymentPlan: 'monthly',
+    scholarship: false,
+    scholarshipDetails: '',
+    
+    // Account
+    username: '',
+    password: '',
+    confirmPassword: '',
+    termsAccepted: false,
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
+    const { name, value, type, checked } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
+    }));
+  };
+
+  const handleSelectChange = (name: string, value: any) => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleWishChange = (name: string, value: any) => {
-    setWishData(prev => ({ ...prev, [name]: value }));
+  const handleLanguageToggle = (language: string) => {
+    setFormData(prev => ({
+      ...prev,
+      knownLanguages: prev.knownLanguages.includes(language)
+        ? prev.knownLanguages.filter(l => l !== language)
+        : [...prev.knownLanguages, language]
+    }));
+  };
+
+  const handleCourseToggle = (courseId: string) => {
+    setFormData(prev => ({
+      ...prev,
+      selectedCourses: prev.selectedCourses.includes(courseId)
+        ? prev.selectedCourses.filter(c => c !== courseId)
+        : [...prev.selectedCourses, courseId]
+    }));
   };
 
   const handleNext = () => {
     if (activeStep < steps.length - 1) {
       setActiveStep(prev => prev + 1);
     } else {
-      setShowWish(true);
-      setOpenDialog(true);
+      handleSubmitRegistration();
     }
   };
 
@@ -150,162 +263,511 @@ export default function BirthdayWishPage() {
     setActiveStep(prev => prev - 1);
   };
 
-  const handleSubmit = () => {
-    setSnackbar({ open: true, message: 'Birthday wish sent successfully! 🎉' });
-    setOpenDialog(false);
+  const handleSubmitRegistration = () => {
+    // Validate form
+    if (!formData.firstName || !formData.email || !formData.termsAccepted) {
+      setSnackbar({ open: true, message: 'Please fill all required fields and accept terms!', severity: 'error' });
+      return;
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      setSnackbar({ open: true, message: 'Passwords do not match!', severity: 'error' });
+      return;
+    }
+
+    const newStudent = {
+      id: `STU${Date.now()}`,
+      ...formData,
+      registrationDate: new Date().toISOString().split('T')[0],
+      status: 'pending',
+      progress: 0
+    };
+
+    setStudents(prev => [...prev, newStudent]);
+    setSnackbar({ open: true, message: 'Registration submitted successfully! 🎉', severity: 'success' });
+    setOpenDialog(true);
+    resetForm();
+  };
+
+  const resetForm = () => {
+    setFormData({
+      firstName: '',
+      lastName: '',
+      email: '',
+      phone: '',
+      dateOfBirth: '',
+      address: '',
+      city: '',
+      country: '',
+      highestEducation: '',
+      institution: '',
+      graduationYear: '',
+      gpa: '',
+      programmingExperience: 0,
+      knownLanguages: [],
+      githubProfile: '',
+      linkedinProfile: '',
+      selectedCourses: [],
+      preferredTimeSlot: '',
+      startDate: '',
+      paymentPlan: 'monthly',
+      scholarship: false,
+      scholarshipDetails: '',
+      username: '',
+      password: '',
+      confirmPassword: '',
+      termsAccepted: false,
+    });
+    setActiveStep(0);
+  };
+
+  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    setTabValue(newValue);
   };
 
   const renderStepContent = (step: number) => {
     switch (step) {
       case 0:
         return (
-          <Grid container spacing={3}>
-            <Grid size={{ xs: 12, md: 6 }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
+              <Box sx={{ flex: '1 1 300px' }}>
+                <TextField
+                  fullWidth
+                  label="First Name *"
+                  name="firstName"
+                  value={formData.firstName}
+                  onChange={handleChange}
+                  required
+                  variant="outlined"
+                  InputProps={{
+                    startAdornment: <Person sx={{ mr: 1, color: 'primary.main' }} />,
+                  }}
+                />
+              </Box>
+              <Box sx={{ flex: '1 1 300px' }}>
+                <TextField
+                  fullWidth
+                  label="Last Name *"
+                  name="lastName"
+                  value={formData.lastName}
+                  onChange={handleChange}
+                  required
+                  variant="outlined"
+                />
+              </Box>
+            </Box>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
+              <Box sx={{ flex: '1 1 300px' }}>
+                <TextField
+                  fullWidth
+                  label="Email *"
+                  name="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                  variant="outlined"
+                  InputProps={{
+                    startAdornment: <Email sx={{ mr: 1, color: 'primary.main' }} />,
+                  }}
+                />
+              </Box>
+              <Box sx={{ flex: '1 1 300px' }}>
+                <TextField
+                  fullWidth
+                  label="Phone Number"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  variant="outlined"
+                  InputProps={{
+                    startAdornment: <Phone sx={{ mr: 1, color: 'primary.main' }} />,
+                  }}
+                />
+              </Box>
+            </Box>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
+              <Box sx={{ flex: '1 1 300px' }}>
+                <TextField
+                  fullWidth
+                  label="Date of Birth"
+                  name="dateOfBirth"
+                  type="date"
+                  value={formData.dateOfBirth}
+                  onChange={handleChange}
+                  variant="outlined"
+                  InputLabelProps={{ shrink: true }}
+                  InputProps={{
+                    startAdornment: <CalendarToday sx={{ mr: 1, color: 'primary.main' }} />,
+                  }}
+                />
+              </Box>
+              <Box sx={{ flex: '1 1 300px' }}>
+                <TextField
+                  fullWidth
+                  label="Country"
+                  name="country"
+                  value={formData.country}
+                  onChange={handleChange}
+                  variant="outlined"
+                  InputProps={{
+                    startAdornment: <LocationOn sx={{ mr: 1, color: 'primary.main' }} />,
+                  }}
+                />
+              </Box>
+            </Box>
+            <Box sx={{ flex: '1 1 100%' }}>
               <TextField
                 fullWidth
-                label="Your Girlfriend's Name"
-                name="girlfriendName"
-                value={formData.girlfriendName}
-                onChange={handleChange}
-                required
-                variant="outlined"
-                helperText="Enter the special name 💖"
-                InputProps={{
-                  startAdornment: <Favorite sx={{ mr: 1, color: 'error.main' }} />,
-                }}
-              />
-            </Grid>
-            <Grid size={{ xs: 12, md: 6 }}>
-              <TextField
-                fullWidth
-                label="Your Name"
-                name="yourName"
-                value={formData.yourName}
-                onChange={handleChange}
-                required
-                variant="outlined"
-                helperText="Your name here 😊"
-              />
-            </Grid>
-            <Grid size={{ xs: 12, md: 6 }}>
-              <TextField
-                fullWidth
-                label="Years Together"
-                name="yearsTogether"
-                value={formData.yearsTogether}
-                onChange={handleChange}
-                type="number"
-                variant="outlined"
-                helperText="How many wonderful years?"
-                InputProps={{
-                  startAdornment: <Star sx={{ mr: 1, color: 'warning.main' }} />,
-                }}
-              />
-            </Grid>
-            <Grid size={{ xs: 12, md: 6 }}>
-              <TextField
-                fullWidth
-                label="Birthday Date"
-                name="date"
-                type="date"
-                value={formData.date}
-                onChange={handleChange}
-                variant="outlined"
-                InputLabelProps={{ shrink: true }}
-                helperText="Select the special date"
-              />
-            </Grid>
-            <Grid size={{ xs: 12 }}>
-              <TextField
-                fullWidth
-                label="Special Memory"
-                name="specialMemory"
-                value={formData.specialMemory}
+                label="Address"
+                name="address"
+                value={formData.address}
                 onChange={handleChange}
                 multiline
-                rows={3}
+                rows={2}
                 variant="outlined"
-                helperText="Share a beautiful memory together"
-                placeholder="That time when we..."
               />
-            </Grid>
-          </Grid>
+            </Box>
+          </Box>
         );
       
       case 1:
         return (
-          <Grid container spacing={3}>
-            <Grid size={{ xs: 12 }}>
-              <TextField
-                fullWidth
-                label="Your Birthday Message"
-                name="message"
-                value={formData.message}
-                onChange={handleChange}
-                multiline
-                rows={4}
-                variant="outlined"
-                helperText="Write from your heart 💌"
-                InputProps={{
-                  startAdornment: <EmojiEmotions sx={{ mr: 1, color: 'primary.main' }} />,
-                }}
-              />
-            </Grid>
-            <Grid size={{ xs: 12 }}>
-              <Typography variant="subtitle1" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <LocalFlorist /> Customize Your Wish
-              </Typography>
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mt: 2 }}>
-                <Chip
-                  icon={<MusicNote />}
-                  label="Background Music"
-                  color={wishData.showMusic ? 'primary' : 'default'}
-                  onClick={() => handleWishChange('showMusic', !wishData.showMusic)}
-                  variant={wishData.showMusic ? 'filled' : 'outlined'}
-                />
-                <Chip
-                  icon={<PhotoCamera />}
-                  label="Photo Gallery"
-                  color={wishData.showPhotos ? 'primary' : 'default'}
-                  onClick={() => handleWishChange('showPhotos', !wishData.showPhotos)}
-                  variant={wishData.showPhotos ? 'filled' : 'outlined'}
-                />
-                <Chip
-                  icon={<FlashOn />}
-                  label="Countdown"
-                  color={wishData.showCountdown ? 'primary' : 'default'}
-                  onClick={() => handleWishChange('showCountdown', !wishData.showCountdown)}
-                  variant={wishData.showCountdown ? 'filled' : 'outlined'}
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
+              <Box sx={{ flex: '1 1 300px' }}>
+                <FormControl fullWidth variant="outlined">
+                  <InputLabel>Highest Education</InputLabel>
+                  <Select
+                    name="highestEducation"
+                    value={formData.highestEducation}
+                    onChange={(e) => handleSelectChange('highestEducation', e.target.value)}
+                    label="Highest Education"
+                    startAdornment={<School sx={{ mr: 1, color: 'primary.main' }} />}
+                  >
+                    <MenuItem value="high-school">High School</MenuItem>
+                    <MenuItem value="bachelor">Bachelor's Degree</MenuItem>
+                    <MenuItem value="master">Master's Degree</MenuItem>
+                    <MenuItem value="phd">PhD</MenuItem>
+                    <MenuItem value="other">Other</MenuItem>
+                  </Select>
+                </FormControl>
+              </Box>
+              <Box sx={{ flex: '1 1 300px' }}>
+                <TextField
+                  fullWidth
+                  label="Institution"
+                  name="institution"
+                  value={formData.institution}
+                  onChange={handleChange}
+                  variant="outlined"
                 />
               </Box>
-            </Grid>
-          </Grid>
+            </Box>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
+              <Box sx={{ flex: '1 1 300px' }}>
+                <TextField
+                  fullWidth
+                  label="Graduation Year"
+                  name="graduationYear"
+                  type="number"
+                  value={formData.graduationYear}
+                  onChange={handleChange}
+                  variant="outlined"
+                  inputProps={{ min: "1900", max: "2030" }}
+                />
+              </Box>
+              <Box sx={{ flex: '1 1 300px' }}>
+                <TextField
+                  fullWidth
+                  label="GPA"
+                  name="gpa"
+                  type="number"
+                  value={formData.gpa}
+                  onChange={handleChange}
+                  variant="outlined"
+                  inputProps={{ step: "0.01", min: "0", max: "4.0" }}
+                />
+              </Box>
+            </Box>
+            <Box sx={{ flex: '1 1 100%' }}>
+              <Typography variant="subtitle1" gutterBottom>
+                Programming Experience (Years)
+              </Typography>
+              <Slider
+                value={formData.programmingExperience}
+                onChange={(e, value) => handleSelectChange('programmingExperience', value)}
+                valueLabelDisplay="auto"
+                step={0.5}
+                marks
+                min={0}
+                max={10}
+                sx={{ mt: 2 }}
+              />
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1 }}>
+                <Typography variant="caption" color="text.secondary">Beginner</Typography>
+                <Typography variant="caption" color="text.secondary">Expert</Typography>
+              </Box>
+            </Box>
+            <Box sx={{ flex: '1 1 100%' }}>
+              <Typography variant="subtitle1" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Code /> Known Programming Languages
+              </Typography>
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 2 }}>
+                {programmingLanguages.map((language) => (
+                  <Chip
+                    key={language}
+                    label={language}
+                    color={formData.knownLanguages.includes(language) ? 'primary' : 'default'}
+                    onClick={() => handleLanguageToggle(language)}
+                    variant={formData.knownLanguages.includes(language) ? 'filled' : 'outlined'}
+                    icon={<Star sx={{ fontSize: 16 }} />}
+                  />
+                ))}
+              </Box>
+            </Box>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
+              <Box sx={{ flex: '1 1 300px' }}>
+                <TextField
+                  fullWidth
+                  label="GitHub Profile"
+                  name="githubProfile"
+                  value={formData.githubProfile}
+                  onChange={handleChange}
+                  variant="outlined"
+                  placeholder="https://github.com/username"
+                />
+              </Box>
+              <Box sx={{ flex: '1 1 300px' }}>
+                <TextField
+                  fullWidth
+                  label="LinkedIn Profile"
+                  name="linkedinProfile"
+                  value={formData.linkedinProfile}
+                  onChange={handleChange}
+                  variant="outlined"
+                  placeholder="https://linkedin.com/in/username"
+                />
+              </Box>
+            </Box>
+          </Box>
         );
       
       case 2:
         return (
-          <Box>
-            <Typography variant="h6" gutterBottom color="primary" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Celebration /> Preview Your Birthday Wish
-            </Typography>
-            <Box sx={{ p: 2, border: `2px dashed ${theme.palette.primary.main}`, borderRadius: 2, mt: 2 }}>
-              <Typography variant="body1" paragraph>
-                Dear <strong>{formData.girlfriendName || '[Her Name]'}</strong>,
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+            <Box sx={{ flex: '1 1 100%' }}>
+              <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Book /> Select Course Modules
               </Typography>
-              <Typography variant="body1" paragraph>
-                {formData.message}
+              <Typography variant="body2" color="text.secondary" paragraph>
+                Choose the modules you want to enroll in (multiple selections allowed)
               </Typography>
-              {formData.specialMemory && (
-                <Typography variant="body2" color="text.secondary" paragraph sx={{ fontStyle: 'italic' }}>
-                  Remember when: {formData.specialMemory}
-                </Typography>
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+                {courseModules.map((module) => (
+                  <Box key={module.id} sx={{ flex: '1 1 300px' }}>
+                    <Card 
+                      sx={{ 
+                        cursor: 'pointer',
+                        border: formData.selectedCourses.includes(module.id) 
+                          ? `2px solid ${theme.palette.primary.main}` 
+                          : '2px solid transparent',
+                        transition: 'all 0.3s'
+                      }}
+                      onClick={() => handleCourseToggle(module.id)}
+                    >
+                      <CardContent>
+                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                          <Typography variant="h6" component="div">
+                            {module.name}
+                          </Typography>
+                          <CheckCircle 
+                            color={formData.selectedCourses.includes(module.id) ? 'primary' : 'disabled'} 
+                          />
+                        </Box>
+                        <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                          Duration: {module.duration}
+                        </Typography>
+                        <Chip 
+                          label={module.level} 
+                          size="small" 
+                          sx={{ mt: 1 }}
+                          color={module.level === 'Advanced' ? 'secondary' : 'default'}
+                        />
+                      </CardContent>
+                    </Card>
+                  </Box>
+                ))}
+              </Box>
+            </Box>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
+              <Box sx={{ flex: '1 1 300px' }}>
+                <FormControl fullWidth variant="outlined">
+                  <InputLabel>Preferred Time Slot</InputLabel>
+                  <Select
+                    name="preferredTimeSlot"
+                    value={formData.preferredTimeSlot}
+                    onChange={(e) => handleSelectChange('preferredTimeSlot', e.target.value)}
+                    label="Preferred Time Slot"
+                    startAdornment={<Schedule sx={{ mr: 1, color: 'primary.main' }} />}
+                  >
+                    {timeSlots.map((slot, index) => (
+                      <MenuItem key={index} value={slot}>{slot}</MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Box>
+              <Box sx={{ flex: '1 1 300px' }}>
+                <TextField
+                  fullWidth
+                  label="Preferred Start Date"
+                  name="startDate"
+                  type="date"
+                  value={formData.startDate}
+                  onChange={handleChange}
+                  variant="outlined"
+                  InputLabelProps={{ shrink: true }}
+                />
+              </Box>
+            </Box>
+            <Box sx={{ flex: '1 1 100%' }}>
+              <FormControl component="fieldset">
+                <FormLabel component="legend">Payment Plan</FormLabel>
+                <RadioGroup
+                  row
+                  name="paymentPlan"
+                  value={formData.paymentPlan}
+                  onChange={handleChange}
+                >
+                  <FormControlLabel value="monthly" control={<Radio />} label="Monthly Payment" />
+                  <FormControlLabel value="quarterly" control={<Radio />} label="Quarterly Payment" />
+                  <FormControlLabel value="full" control={<Radio />} label="Full Payment (10% discount)" />
+                </RadioGroup>
+              </FormControl>
+            </Box>
+            <Box sx={{ flex: '1 1 100%' }}>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={formData.scholarship}
+                    onChange={(e) => handleSelectChange('scholarship', e.target.checked)}
+                    color="primary"
+                  />
+                }
+                label="Apply for Scholarship"
+              />
+              {formData.scholarship && (
+                <TextField
+                  fullWidth
+                  label="Scholarship Details"
+                  name="scholarshipDetails"
+                  value={formData.scholarshipDetails}
+                  onChange={handleChange}
+                  multiline
+                  rows={3}
+                  variant="outlined"
+                  sx={{ mt: 2 }}
+                  placeholder="Please explain why you should receive a scholarship..."
+                />
               )}
-              <Typography variant="body1" paragraph>
-                With all my love,
-              </Typography>
-              <Typography variant="h6" color="primary">
-                {formData.yourName || '[Your Name]'}
-              </Typography>
+            </Box>
+          </Box>
+        );
+      
+      case 3:
+        return (
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <VerifiedUser /> Review Your Registration
+            </Typography>
+            
+            <Accordion defaultExpanded>
+              <AccordionSummary expandIcon={<ExpandMore />}>
+                <Typography variant="subtitle1">Personal Information</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+                  <Box sx={{ flex: '1 1 200px' }}><strong>Name:</strong></Box>
+                  <Box sx={{ flex: '1 1 200px' }}>{formData.firstName} {formData.lastName}</Box>
+                  <Box sx={{ flex: '1 1 200px' }}><strong>Email:</strong></Box>
+                  <Box sx={{ flex: '1 1 200px' }}>{formData.email}</Box>
+                  <Box sx={{ flex: '1 1 200px' }}><strong>Phone:</strong></Box>
+                  <Box sx={{ flex: '1 1 200px' }}>{formData.phone || 'Not provided'}</Box>
+                </Box>
+              </AccordionDetails>
+            </Accordion>
+
+            <Accordion>
+              <AccordionSummary expandIcon={<ExpandMore />}>
+                <Typography variant="subtitle1">Academic Details</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+                  <Box sx={{ flex: '1 1 200px' }}><strong>Education:</strong></Box>
+                  <Box sx={{ flex: '1 1 200px' }}>{formData.highestEducation || 'Not provided'}</Box>
+                  <Box sx={{ flex: '1 1 200px' }}><strong>Experience:</strong></Box>
+                  <Box sx={{ flex: '1 1 200px' }}>{formData.programmingExperience} years</Box>
+                  <Box sx={{ flex: '1 1 200px' }}><strong>Languages:</strong></Box>
+                  <Box sx={{ flex: '1 1 200px' }}>{formData.knownLanguages.join(', ') || 'None'}</Box>
+                </Box>
+              </AccordionDetails>
+            </Accordion>
+
+            <Accordion>
+              <AccordionSummary expandIcon={<ExpandMore />}>
+                <Typography variant="subtitle1">Course Selection</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <List dense>
+                  {formData.selectedCourses.map(courseId => {
+                    const course = courseModules.find(m => m.id === courseId);
+                    return course ? (
+                      <ListItem key={courseId}>
+                        <ListItemIcon>
+                          <CheckCircle color="primary" />
+                        </ListItemIcon>
+                        <ListItemText primary={course.name} secondary={`${course.duration} • ${course.level}`} />
+                      </ListItem>
+                    ) : null;
+                  })}
+                  {formData.selectedCourses.length === 0 && (
+                    <Typography color="text.secondary">No courses selected</Typography>
+                  )}
+                </List>
+              </AccordionDetails>
+            </Accordion>
+
+            <Accordion>
+              <AccordionSummary expandIcon={<ExpandMore />}>
+                <Typography variant="subtitle1">Account Security</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+                  <Box sx={{ flex: '1 1 200px' }}><strong>Username:</strong></Box>
+                  <Box sx={{ flex: '1 1 200px' }}>{formData.username}</Box>
+                  <Box sx={{ flex: '1 1 200px' }}><strong>Password:</strong></Box>
+                  <Box sx={{ flex: '1 1 200px' }}>••••••••</Box>
+                </Box>
+              </AccordionDetails>
+            </Accordion>
+
+            <Box sx={{ p: 2, bgcolor: alpha(theme.palette.info.light, 0.1), borderRadius: 2, mt: 1 }}>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={formData.termsAccepted}
+                    onChange={handleChange}
+                    name="termsAccepted"
+                    color="primary"
+                  />
+                }
+                label={
+                  <Typography variant="body2">
+                    I agree to the Terms & Conditions and Privacy Policy *
+                  </Typography>
+                }
+              />
             </Box>
           </Box>
         );
@@ -315,174 +777,166 @@ export default function BirthdayWishPage() {
     }
   };
 
-  const renderBirthdayWish = () => (
-    <Fade in={showWish} timeout={1000}>
-      <Box sx={{ textAlign: 'center', py: 4, position: 'relative', overflow: 'hidden' }}>
-        {/* Animated background elements */}
-        <FloatingHeart sx={{ top: 50, left: 50 }}>
-          <Favorite fontSize="large" />
-        </FloatingHeart>
-        <FloatingHeart sx={{ top: 100, right: 100, animationDelay: '1s' }}>
-          <Cake fontSize="large" />
-        </FloatingHeart>
-        <FloatingHeart sx={{ bottom: 150, left: 150, animationDelay: '2s' }}>
-          <Star fontSize="large" />
-        </FloatingHeart>
-
-        {/* Main content */}
-        <Grow in={showWish} timeout={1500}>
-          <Box>
-            <Typography
-              variant="h2"
-              component="h1"
-              gutterBottom
-              sx={{
-                background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                fontWeight: 'bold',
-                mb: 2,
-              }}
-            >
-              🎂 Happy Birthday! 🎉
-            </Typography>
-            
-            <Typography variant="h3" gutterBottom sx={{ color: 'primary.main', mb: 3 }}>
-              To My Beautiful {formData.girlfriendName} 💖
-            </Typography>
-
-            <Zoom in={showWish} timeout={2000}>
-              <Card sx={{ maxWidth: 600, mx: 'auto', mb: 4, borderRadius: 4 }}>
-                <Box sx={{ position: 'relative' }}>
-                  <CardMedia
-                    component="div"
-                    sx={{
-                      height: 200,
-                      background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.secondary.main} 100%)`,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}
-                  >
-                    <Typography variant="h4" sx={{ color: 'white', fontWeight: 'bold' }}>
-                      {new Date(formData.date).toLocaleDateString('en-US', {
-                        weekday: 'long',
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric'
-                      })}
-                    </Typography>
-                  </CardMedia>
-                  <Box
-                    sx={{
-                      position: 'absolute',
-                      top: -20,
-                      left: '50%',
-                      transform: 'translateX(-50%)',
-                      backgroundColor: 'white',
-                      borderRadius: '50%',
-                      padding: 2,
-                      boxShadow: 3,
-                    }}
-                  >
-                    <Avatar sx={{ width: 60, height: 60, bgcolor: 'primary.main' }}>
-                      <Cake fontSize="large" />
-                    </Avatar>
-                  </Box>
+  const renderDashboard = () => (
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+      {/* Stats Cards */}
+      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
+        <Box sx={{ flex: '1 1 200px' }}>
+          <Card>
+            <CardContent>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <Box>
+                  <Typography color="text.secondary" gutterBottom variant="h6">
+                    Total Students
+                  </Typography>
+                  <Typography variant="h4">{students.length}</Typography>
                 </Box>
-                
-                <CardContent sx={{ pt: 6 }}>
-                  <Typography variant="h5" gutterBottom color="primary">
-                    My Dearest {formData.girlfriendName},
+                <Avatar sx={{ bgcolor: theme.palette.primary.light }}>
+                  <Group />
+                </Avatar>
+              </Box>
+              <LinearProgress variant="determinate" value={75} sx={{ mt: 2 }} />
+            </CardContent>
+          </Card>
+        </Box>
+        <Box sx={{ flex: '1 1 200px' }}>
+          <Card>
+            <CardContent>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <Box>
+                  <Typography color="text.secondary" gutterBottom variant="h6">
+                    Active Courses
                   </Typography>
-                  
-                  <Typography variant="body1" paragraph sx={{ fontSize: '1.1rem', lineHeight: 1.8 }}>
-                    On this special day, I want you to know how incredibly grateful I am to have you in my life.
-                    You bring so much joy, love, and happiness into my world every single day.
+                  <Typography variant="h4">{courseModules.length}</Typography>
+                </Box>
+                <Avatar sx={{ bgcolor: theme.palette.secondary.light }}>
+                  <Book />
+                </Avatar>
+              </Box>
+              <LinearProgress variant="determinate" value={60} sx={{ mt: 2 }} color="secondary" />
+            </CardContent>
+          </Card>
+        </Box>
+        <Box sx={{ flex: '1 1 200px' }}>
+          <Card>
+            <CardContent>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <Box>
+                  <Typography color="text.secondary" gutterBottom variant="h6">
+                    Completion Rate
                   </Typography>
-
-                  <Divider sx={{ my: 2 }} />
-                  
-                  <List>
-                    <ListItem>
-                      <ListItemIcon>
-                        <Favorite color="error" />
-                      </ListItemIcon>
-                      <ListItemText primary="Your smile lights up my world" />
-                    </ListItem>
-                    <ListItem>
-                      <ListItemIcon>
-                        <Star color="warning" />
-                      </ListItemIcon>
-                      <ListItemText primary="You make every moment magical" />
-                    </ListItem>
-                    <ListItem>
-                      <ListItemIcon>
-                        <EmojiEmotions color="primary" />
-                      </ListItemIcon>
-                      <ListItemText primary="Your happiness means everything to me" />
-                    </ListItem>
-                  </List>
-
-                  {formData.yearsTogether && (
-                    <Box sx={{ mt: 3, p: 2, bgcolor: 'action.hover', borderRadius: 2 }}>
-                      <Typography variant="h6" color="secondary">
-                        {formData.yearsTogether} amazing years together and counting! 💕
-                      </Typography>
-                    </Box>
-                  )}
-
-                  {formData.specialMemory && (
-                    <Box sx={{ mt: 3, p: 2, borderLeft: `4px solid ${theme.palette.primary.main}`, bgcolor: 'background.default' }}>
-                      <Typography variant="body1" sx={{ fontStyle: 'italic' }}>
-                        "Remember when {formData.specialMemory}"
-                      </Typography>
-                    </Box>
-                  )}
-
-                  <Box sx={{ mt: 4, p: 3, bgcolor: alpha(theme.palette.primary.light, 0.1), borderRadius: 3 }}>
-                    <Typography variant="h6" gutterBottom>
-                      {formData.message}
-                    </Typography>
-                  </Box>
-
-                  <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mt: 4, flexWrap: 'wrap' }}>
-                    <Chip icon={<Restaurant />} label="Dinner Date" color="primary" variant="outlined" />
-                    <Chip icon={<LocalFlorist />} label="Flowers Delivery" color="secondary" variant="outlined" />
-                    <Chip icon={<CardGiftcard />} label="Special Gift" color="success" variant="outlined" />
-                  </Box>
-
-                  <Typography variant="h5" sx={{ mt: 4, mb: 2, color: 'secondary.main' }}>
-                    Forever Yours,
+                  <Typography variant="h4">85%</Typography>
+                </Box>
+                <Avatar sx={{ bgcolor: theme.palette.success.light }}>
+                  <TrendingUp />
+                </Avatar>
+              </Box>
+              <LinearProgress variant="determinate" value={85} sx={{ mt: 2 }} color="success" />
+            </CardContent>
+          </Card>
+        </Box>
+        <Box sx={{ flex: '1 1 200px' }}>
+          <Card>
+            <CardContent>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <Box>
+                  <Typography color="text.secondary" gutterBottom variant="h6">
+                    Satisfaction
                   </Typography>
-                  <Typography variant="h4" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
-                    {formData.yourName}
-                  </Typography>
-
-                  <Box sx={{ mt: 4, display: 'flex', justifyContent: 'center', gap: 1 }}>
-                    {[1, 2, 3, 4, 5].map((i) => (
-                      <Favorite key={i} sx={{ color: 'error.main', fontSize: 40, animation: `pulse 1.${i}s infinite` }} />
-                    ))}
-                  </Box>
-                </CardContent>
-              </Card>
-            </Zoom>
-
-            <ColorfulButton
-              onClick={() => setOpenDialog(true)}
-              endIcon={<Send />}
-              sx={{ mt: 2 }}
-            >
-              Send Birthday Wish
-            </ColorfulButton>
-          </Box>
-        </Grow>
+                  <Typography variant="h4">4.8</Typography>
+                </Box>
+                <Avatar sx={{ bgcolor: theme.palette.warning.light }}>
+                  <Favorite />
+                </Avatar>
+              </Box>
+              <Rating value={4.8} readOnly precision={0.1} sx={{ mt: 1 }} />
+            </CardContent>
+          </Card>
+        </Box>
       </Box>
-    </Fade>
+
+      {/* Search and Filters */}
+      <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+        <Box sx={{ flex: '1 1 300px' }}>
+          <TextField
+            placeholder="Search students..."
+            variant="outlined"
+            fullWidth
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            InputProps={{
+              startAdornment: <Search sx={{ mr: 1, color: 'action.active' }} />,
+            }}
+          />
+        </Box>
+        <Button variant="outlined" startIcon={<FilterList />}>
+          Filters
+        </Button>
+        <Button variant="outlined" startIcon={<Sort />}>
+          Sort
+        </Button>
+        <Button variant="contained" startIcon={<Download />}>
+          Export
+        </Button>
+      </Box>
+
+      {/* Students Table */}
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Student ID</TableCell>
+              <TableCell>Name</TableCell>
+              <TableCell>Email</TableCell>
+              <TableCell>Courses</TableCell>
+              <TableCell>Status</TableCell>
+              <TableCell>Progress</TableCell>
+              <TableCell>Actions</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {students.slice(0, 5).map((student) => (
+              <TableRow key={student.id}>
+                <TableCell>{student.id}</TableCell>
+                <TableCell>{student.firstName} {student.lastName}</TableCell>
+                <TableCell>{student.email}</TableCell>
+                <TableCell>
+                  <Chip label={`${student.selectedCourses.length} courses`} size="small" />
+                </TableCell>
+                <TableCell>
+                  <Chip 
+                    label={student.status} 
+                    color={student.status === 'active' ? 'success' : 'warning'} 
+                    size="small" 
+                  />
+                </TableCell>
+                <TableCell>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <CircularProgress variant="determinate" value={student.progress} size={24} />
+                    <Typography variant="body2">{student.progress}%</Typography>
+                  </Box>
+                </TableCell>
+                <TableCell>
+                  <IconButton size="small" color="primary">
+                    <Visibility />
+                  </IconButton>
+                  <IconButton size="small" color="secondary">
+                    <Edit />
+                  </IconButton>
+                  <IconButton size="small" color="error">
+                    <Delete />
+                  </IconButton>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Box>
   );
 
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
+    <Container maxWidth="xl" sx={{ py: 4 }}>
       {/* Header */}
       <Box sx={{ textAlign: 'center', mb: 6 }}>
         <Typography
@@ -500,16 +954,25 @@ export default function BirthdayWishPage() {
             gap: 2,
           }}
         >
-          <Celebration fontSize="large" />
-          Birthday Wishes Creator
-          <Celebration fontSize="large" />
+          <Computer fontSize="large" />
+          Software Engineering Lecture Registration
+          <Computer fontSize="large" />
         </Typography>
         <Typography variant="h6" color="text.secondary">
-          Create a magical birthday surprise for your special someone ✨
+          Register for our comprehensive software engineering program
         </Typography>
       </Box>
 
-      {!showWish ? (
+      {/* Tabs */}
+      <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 4 }}>
+        <Tabs value={tabValue} onChange={handleTabChange}>
+          <Tab label="Registration Form" icon={<Person />} iconPosition="start" />
+          <Tab label="Student Dashboard" icon={<Analytics />} iconPosition="start" />
+          <Tab label="Course Catalog" icon={<Book />} iconPosition="start" />
+        </Tabs>
+      </Box>
+
+      {tabValue === 0 ? (
         <>
           {/* Stepper */}
           <Stepper activeStep={activeStep} sx={{ mb: 4 }}>
@@ -521,74 +984,110 @@ export default function BirthdayWishPage() {
           </Stepper>
 
           {/* Form Section */}
-          <AnimatedPaper elevation={3}>
+          <ProfessionalPaper elevation={3}>
             {renderStepContent(activeStep)}
             
             <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 4 }}>
               <Button
                 disabled={activeStep === 0}
                 onClick={handleBack}
-                startIcon={<ArrowForward sx={{ transform: 'rotate(180deg)' }} />}
+                startIcon={<ArrowBack />}
               >
                 Back
               </Button>
               <ColorfulButton
                 onClick={handleNext}
-                endIcon={activeStep === steps.length - 1 ? <Celebration /> : <ArrowForward />}
+                endIcon={activeStep === steps.length - 1 ? <CheckCircle /> : <ArrowForward />}
               >
-                {activeStep === steps.length - 1 ? 'Create Birthday Wish' : 'Next'}
+                {activeStep === steps.length - 1 ? 'Submit Registration' : 'Next'}
               </ColorfulButton>
             </Box>
-          </AnimatedPaper>
+          </ProfessionalPaper>
         </>
+      ) : tabValue === 1 ? (
+        renderDashboard()
       ) : (
-        renderBirthdayWish()
+        <ProfessionalPaper>
+          <Typography variant="h5" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Book /> Available Courses
+          </Typography>
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
+            {courseModules.map((module) => (
+              <Box key={module.id} sx={{ flex: '1 1 300px' }}>
+                <StudentCard>
+                  <CardContent>
+                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+                      <Typography variant="h6" component="div">
+                        {module.name}
+                      </Typography>
+                      <Badge color="primary" badgeContent={module.level}>
+                        <Assignment />
+                      </Badge>
+                    </Box>
+                    <Typography variant="body2" color="text.secondary" paragraph>
+                      Comprehensive training in {module.name.toLowerCase()} with hands-on projects and real-world applications.
+                    </Typography>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2 }}>
+                      <Chip label={module.duration} size="small" />
+                      <Button size="small" variant="outlined">
+                        View Details
+                      </Button>
+                    </Box>
+                  </CardContent>
+                </StudentCard>
+              </Box>
+            ))}
+          </Box>
+        </ProfessionalPaper>
       )}
 
-      {/* Preview Dialog */}
-      <Dialog open={openDialog} onClose={() => setOpenDialog(false)} maxWidth="md" fullWidth>
+      {/* Success Dialog */}
+      <Dialog open={openDialog} onClose={() => setOpenDialog(false)} maxWidth="sm" fullWidth>
         <DialogTitle>
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <Typography variant="h6">Your Birthday Wish is Ready! 🎁</Typography>
+            <Typography variant="h6">Registration Successful! 🎉</Typography>
             <IconButton onClick={() => setOpenDialog(false)}>
-              <Close />
+              <Close /> {/* FIXED: Now imported */}
             </IconButton>
           </Box>
         </DialogTitle>
         <DialogContent>
-          <Box sx={{ p: 2 }}>
+          <Box sx={{ textAlign: 'center', py: 2 }}>
+            <Avatar sx={{ width: 80, height: 80, bgcolor: 'success.main', mx: 'auto', mb: 2 }}>
+              <CheckCircle sx={{ fontSize: 40 }} />
+            </Avatar>
+            <Typography variant="h6" gutterBottom>
+              Welcome to Software Engineering Program!
+            </Typography>
             <Typography variant="body1" paragraph>
-              Your beautiful birthday wish for <strong>{formData.girlfriendName}</strong> is ready to be shared!
+              Your registration has been submitted successfully. You will receive a confirmation email shortly.
             </Typography>
             <List>
               <ListItem>
                 <ListItemIcon>
-                  <FavoriteBorder color="error" />
+                  <Email color="primary" />
                 </ListItemIcon>
-                <ListItemText primary="Personalized message" secondary="Tailored specifically for her" />
+                <ListItemText primary="Check your email for login credentials" />
               </ListItem>
               <ListItem>
                 <ListItemIcon>
-                  <Cake color="primary" />
+                  <Schedule color="primary" />
                 </ListItemIcon>
-                <ListItemText primary="Birthday date" secondary={new Date(formData.date).toLocaleDateString()} />
+                <ListItemText primary="Orientation session starts next week" />
               </ListItem>
               <ListItem>
                 <ListItemIcon>
-                  <Star color="warning" />
+                  <Assignment color="primary" />
                 </ListItemIcon>
-                <ListItemText 
-                  primary="Special features" 
-                  secondary={`Music: ${wishData.showMusic ? 'Yes' : 'No'}, Photos: ${wishData.showPhotos ? 'Yes' : 'No'}`} 
-                />
+                <ListItemText primary="Complete your profile to get started" />
               </ListItem>
             </List>
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpenDialog(false)}>Edit More</Button>
-          <ColorfulButton onClick={handleSubmit} startIcon={<Send />}>
-            Send to {formData.girlfriendName}
+          <Button onClick={() => setOpenDialog(false)}>Close</Button>
+          <ColorfulButton onClick={() => setTabValue(1)} startIcon={<Analytics />}>
+            Go to Dashboard
           </ColorfulButton>
         </DialogActions>
       </Dialog>
@@ -602,7 +1101,7 @@ export default function BirthdayWishPage() {
       >
         <Alert
           onClose={() => setSnackbar({ ...snackbar, open: false })}
-          severity="success"
+          severity={snackbar.severity}
           variant="filled"
           sx={{ width: '100%' }}
         >
@@ -613,10 +1112,11 @@ export default function BirthdayWishPage() {
       {/* Footer */}
       <Box sx={{ textAlign: 'center', mt: 8, pt: 4, borderTop: `1px solid ${theme.palette.divider}` }}>
         <Typography variant="body2" color="text.secondary">
-          Made with <Favorite sx={{ color: 'error.main', fontSize: 14, verticalAlign: 'middle' }} /> for your special someone
+          <Computer sx={{ verticalAlign: 'middle', mr: 1 }} />
+          Software Engineering Lecture Program © {new Date().getFullYear()}
         </Typography>
         <Typography variant="caption" color="text.secondary">
-          Every day with you is a celebration 💝
+          Empowering the next generation of software engineers
         </Typography>
       </Box>
     </Container>
