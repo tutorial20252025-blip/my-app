@@ -1,836 +1,623 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Container,
+  Paper,
   Typography,
   TextField,
   Button,
+  Box,
   Card,
   CardContent,
-  Box,
-  Grid,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  Alert,
-  Paper,
+  CardMedia,
   IconButton,
   Fade,
-  Grow,
-  Slide,
   Zoom,
+  Grow,
+  Stepper,
+  Step,
+  StepLabel,
   Chip,
-  Divider,
   Avatar,
+  Divider,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Snackbar,
+  Alert,
   useTheme,
   alpha,
+  Grid
 } from '@mui/material';
-import { styled, keyframes } from '@mui/material/styles';
-import { motion, AnimatePresence } from 'framer-motion';
-import CelebrationIcon from '@mui/icons-material/Celebration';
-import CakeIcon from '@mui/icons-material/Cake';
-import SendIcon from '@mui/icons-material/Send';
-import EditIcon from '@mui/icons-material/Edit';
-import FavoriteIcon from '@mui/icons-material/Favorite';
-import ShareIcon from '@mui/icons-material/Share';
-import ContentCopyIcon from '@mui/icons-material/ContentCopy';
-import SparklesIcon from '@mui/icons-material/AutoAwesome';
-import StarsIcon from '@mui/icons-material/Stars';
-import HeartBrokenIcon from '@mui/icons-material/FavoriteBorder';
-import Confetti from 'react-confetti';
-import { useWindowSize } from 'react-use';
 
-// Premium animations
-const floatAnimation = keyframes`
-  0%, 100% { transform: translateY(0px) rotate(0deg); }
-  50% { transform: translateY(-20px) rotate(5deg); }
-`;
+import {
+  Favorite,
+  Cake,
+  Star,
+  MusicNote,
+  EmojiEmotions,
+  Send,
+  Celebration,
+  LocalFlorist,
+  Restaurant,
+  CardGiftcard,
+  FavoriteBorder,
+  PhotoCamera,
+  Close,
+  ArrowForward,
+  FlashOn
+} from '@mui/icons-material';
+import { styled } from '@mui/material/styles';
 
-const shimmerAnimation = keyframes`
-  0% { background-position: -1000px 0; }
-  100% { background-position: 1000px 0; }
-`;
-
-const pulseGlow = keyframes`
-  0%, 100% { box-shadow: 0 0 20px rgba(255, 105, 180, 0.5); }
-  50% { box-shadow: 0 0 40px rgba(255, 105, 180, 0.8); }
-`;
-
-const gradientFlow = keyframes`
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-`;
-
-// Premium Styled Components
-const GlassCard = styled(Card)(({ theme }) => ({
-  background: 'rgba(255, 255, 255, 0.1)',
-  backdropFilter: 'blur(20px)',
-  border: '1px solid rgba(255, 255, 255, 0.2)',
-  borderRadius: '32px',
-  boxShadow: `
-    0 8px 32px rgba(31, 38, 135, 0.37),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2)
-  `,
-  position: 'relative',
-  overflow: 'hidden',
-  '&::before': {
-    content: '""',
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    height: '4px',
-    background: 'linear-gradient(90deg, #ff6b9d, #ff8e53, #ff6b9d)',
-    backgroundSize: '200% 100%',
-    animation: `${shimmerAnimation} 3s infinite linear`,
-  },
-}));
-
-const GradientButton = styled(Button)(({ theme }) => ({
-  background: 'linear-gradient(135deg, #ff6b9d 0%, #ff8e53 100%)',
-  backgroundSize: '200% 200%',
+const ColorfulButton = styled(Button)(({ theme }) => ({
+  background: `linear-gradient(45deg, ${theme.palette.primary.main} 30%, ${theme.palette.secondary.main} 90%)`,
+  border: 0,
+  borderRadius: 50,
   color: 'white',
-  fontWeight: 700,
-  padding: '16px 40px',
-  borderRadius: '50px',
-  fontSize: '1.1rem',
-  textTransform: 'none',
-  transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-  position: 'relative',
-  overflow: 'hidden',
-  animation: `${pulseGlow} 2s infinite`,
-  '&::before': {
-    content: '""',
-    position: 'absolute',
-    top: 0,
-    left: '-100%',
-    width: '100%',
-    height: '100%',
-    background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)',
-    transition: 'left 0.7s',
-  },
+  height: 48,
+  padding: '0 30px',
+  fontWeight: 'bold',
+  boxShadow: `0 3px 5px 2px ${alpha(theme.palette.primary.main, 0.3)}`,
   '&:hover': {
-    transform: 'translateY(-4px) scale(1.02)',
-    boxShadow: '0 20px 40px rgba(255, 107, 157, 0.4)',
-    '&::before': {
-      left: '100%',
-    },
+    transform: 'translateY(-2px)',
+    boxShadow: `0 5px 10px 2px ${alpha(theme.palette.primary.main, 0.5)}`,
   },
-  '&:active': {
-    transform: 'translateY(-2px) scale(1.01)',
-  },
+  transition: 'all 0.3s ease-in-out',
 }));
 
-const FloatingHeart = styled(motion.div)({
-  position: 'absolute',
-  fontSize: '24px',
-  color: '#ff6b9d',
-  pointerEvents: 'none',
-  zIndex: 1000,
-});
-
-const Sparkle = styled('div')({
-  position: 'absolute',
-  width: '6px',
-  height: '6px',
-  background: 'radial-gradient(circle, #fff 30%, transparent 70%)',
-  borderRadius: '50%',
-  filter: 'blur(1px)',
-});
-
-const MessageDisplay = styled(Paper)(({ theme }) => ({
-  background: `linear-gradient(135deg, 
-    ${alpha(theme.palette.background.paper, 0.9)} 0%,
-    ${alpha(theme.palette.background.paper, 0.7)} 100%)`,
-  backdropFilter: 'blur(10px)',
-  border: '1px solid rgba(255, 255, 255, 0.3)',
-  borderRadius: '24px',
+const AnimatedPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(4),
+  margin: theme.spacing(2),
+  borderRadius: 20,
+  background: `linear-gradient(135deg, ${alpha(theme.palette.background.paper, 0.9)} 0%, ${alpha(theme.palette.secondary.light, 0.1)} 100%)`,
+  backdropFilter: 'blur(10px)',
+  border: `1px solid ${alpha(theme.palette.primary.main, 0.1)}`,
   position: 'relative',
   overflow: 'hidden',
-  minHeight: '300px',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
   '&::before': {
     content: '""',
     position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
-    bottom: 0,
-    background: 'url("data:image/svg+xml,%3Csvg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"%3E%3Cpath d="M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z" fill="%23ff6b9d" fill-opacity="0.05" fill-rule="evenodd"/%3E%3C/svg%3E")',
-    opacity: 0.3,
+    height: 4,
+    background: `linear-gradient(90deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
   },
 }));
 
-export default function PremiumBirthdayGreeting() {
-  const [recipientType, setRecipientType] = useState('girlfriend');
-  const [name, setName] = useState('');
-  const [age, setAge] = useState('');
-  const [message, setMessage] = useState('');
-  const [generatedMessage, setGeneratedMessage] = useState('');
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const [showConfetti, setShowConfetti] = useState(false);
-  const [hearts, setHearts] = useState<Array<{ id: number; x: number; y: number }>>([]);
-  const [sparkles, setSparkles] = useState<Array<{ id: number; x: number; y: number }>>([]);
-  const [copied, setCopied] = useState(false);
-  const { width, height } = useWindowSize();
+const FloatingHeart = styled(Box)(({ theme }) => ({
+  position: 'absolute',
+  animation: 'float 3s ease-in-out infinite',
+  color: theme.palette.error.main,
+  '@keyframes float': {
+    '0%, 100%': { transform: 'translateY(0px)' },
+    '50%': { transform: 'translateY(-20px)' },
+  },
+}));
+
+const steps = ['Enter Details', 'Customize Wish', 'Preview & Send'];
+
+export default function BirthdayWishPage() {
   const theme = useTheme();
+  const [activeStep, setActiveStep] = useState(0);
+  const [showWish, setShowWish] = useState(false);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [snackbar, setSnackbar] = useState({ open: false, message: '' });
 
-  const recipientOptions = [
-    { value: 'girlfriend', label: 'My Beautiful Girlfriend 💖', color: '#ff6b9d', emoji: '👸' },
-    { value: 'wife', label: 'My Amazing Wife 👰', color: '#ff8e53', emoji: '💍' },
-    { value: 'partner', label: 'My Soulmate 💫', color: '#6a11cb', emoji: '🌟' },
-    { value: 'love', label: 'My One & Only 💕', color: '#ff416c', emoji: '🥰' },
-    { value: 'queen', label: 'My Queen 👑', color: '#ffd166', emoji: '👑' },
-  ];
+  const [formData, setFormData] = useState({
+    girlfriendName: '',
+    yourName: '',
+    yearsTogether: '',
+    specialMemory: '',
+    favoriteColor: '#ff4081',
+    message: 'You make every moment magical. Happy Birthday to the most amazing person in my life!',
+    date: new Date().toISOString().split('T')[0],
+  });
 
-  // Create floating hearts
-  useEffect(() => {
-    if (isSubmitted) {
-      const interval = setInterval(() => {
-        const newHeart = {
-          id: Date.now(),
-          x: Math.random() * 100,
-          y: 100,
-        };
-        setHearts(prev => [...prev, newHeart]);
-        setTimeout(() => {
-          setHearts(prev => prev.filter(h => h.id !== newHeart.id));
-        }, 3000);
-      }, 500);
+  const [wishData, setWishData] = useState({
+    showMusic: true,
+    showPhotos: true,
+    showCountdown: true,
+    animationType: 'hearts',
+  });
 
-      return () => clearInterval(interval);
-    }
-  }, [isSubmitted]);
-
-  // Create sparkles
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (isSubmitted) {
-        const newSparkle = {
-          id: Date.now(),
-          x: Math.random() * 100,
-          y: Math.random() * 100,
-        };
-        setSparkles(prev => [...prev.slice(-20), newSparkle]);
-        setTimeout(() => {
-          setSparkles(prev => prev.filter(s => s.id !== newSparkle.id));
-        }, 1000);
-      }
-    }, 100);
-
-    return () => clearInterval(interval);
-  }, [isSubmitted]);
-
-  const generateRomanticMessage = () => {
-    const romanticMessages = {
-      girlfriend: [
-        `My dearest ${name}, on your ${age}th birthday, I want you to know that you are the most incredible person I've ever met. Every moment with you feels like a beautiful dream. Happy Birthday, my love! 💖`,
-        
-        `Happy ${age}th Birthday to the woman who stole my heart! ${name}, you make every day brighter just by being in it. You're not just my girlfriend, you're my everything. 🥰`,
-        
-        `To my beautiful ${name}, as you turn ${age}, I promise to love you more with each passing day. You are the melody to my heart's song. Happy Birthday, my angel! ✨`,
-        
-        `On your ${age}th birthday, I want to remind you how extraordinary you are, ${name}. You're the reason I believe in magic and forever. Happy Birthday, my precious love! 💫`,
-      ],
-      wife: [
-        `Happy ${age}th Birthday to my beautiful wife, ${name}! Every year with you is a blessing I don't deserve. You complete me in ways I never knew possible. 💍`,
-        
-        `To my wife, my partner, my everything - happy ${age}th birthday, ${name}! Our love story is my favorite, and you are my favorite chapter. 👰`,
-      ],
-      partner: [
-        `Happy ${age}th Birthday, ${name}! You're not just my partner, you're my home. Thank you for being the most amazing person I know. 💫`,
-      ],
-      love: [
-        `To the love of my life, ${name}, happy ${age}th birthday! You are the sunshine that brightens my darkest days. 💕`,
-      ],
-      queen: [
-        `Happy ${age}th Birthday to my queen, ${name}! You deserve all the love and happiness in the universe. Today and always, I'm yours. 👑`,
-      ],
-    };
-
-    const messages = romanticMessages[recipientType as keyof typeof romanticMessages] || romanticMessages.girlfriend;
-    const selectedMessage = messages[Math.floor(Math.random() * messages.length)];
-    
-    let finalMessage = selectedMessage;
-    if (message) {
-      finalMessage += `\n\n💌 Special Note: ${message}`;
-    }
-    
-    // Add romantic closing
-    finalMessage += `\n\nForever yours,\nYour loving ${recipientType === 'girlfriend' ? 'boyfriend' : 'partner'} 💝`;
-
-    setGeneratedMessage(finalMessage);
-    setIsSubmitted(true);
-    setShowConfetti(true);
-    
-    // Enhanced confetti
-    setTimeout(() => {
-      setShowConfetti(false);
-    }, 8000);
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleCopy = async () => {
-    await navigator.clipboard.writeText(generatedMessage);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+  const handleWishChange = (name: string, value: any) => {
+    setWishData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleShare = async () => {
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: `Happy Birthday ${name}!`,
-          text: generatedMessage,
-        });
-      } catch (error) {
-        console.log('Sharing cancelled');
-      }
+  const handleNext = () => {
+    if (activeStep < steps.length - 1) {
+      setActiveStep(prev => prev + 1);
     } else {
-      handleCopy();
+      setShowWish(true);
+      setOpenDialog(true);
     }
   };
 
-  return (
-    <Box
-      sx={{
-        minHeight: '100vh',
-        background: 'linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 50%, #16213e 100%)',
-        position: 'relative',
-        overflow: 'hidden',
-        '&::before': {
-          content: '""',
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: `
-            radial-gradient(circle at 20% 80%, rgba(255, 107, 157, 0.15) 0%, transparent 50%),
-            radial-gradient(circle at 80% 20%, rgba(255, 142, 83, 0.15) 0%, transparent 50%),
-            radial-gradient(circle at 40% 40%, rgba(106, 17, 203, 0.1) 0%, transparent 50%)
-          `,
-        },
-      }}
-    >
-      {/* Animated background elements */}
-      <Box
-        sx={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          pointerEvents: 'none',
-          zIndex: 0,
-        }}
-      >
-        {[...Array(20)].map((_, i) => (
-          <Box
-            key={i}
-            sx={{
-              position: 'absolute',
-              width: '2px',
-              height: '2px',
-              background: '#fff',
-              borderRadius: '50%',
-              top: `${Math.random() * 100}%`,
-              left: `${Math.random() * 100}%`,
-              animation: `${floatAnimation} ${3 + Math.random() * 4}s infinite ease-in-out`,
-              animationDelay: `${Math.random() * 2}s`,
-              opacity: 0.3 + Math.random() * 0.4,
-            }}
-          />
-        ))}
-      </Box>
+  const handleBack = () => {
+    setActiveStep(prev => prev - 1);
+  };
 
-      {/* Floating Hearts */}
-      <AnimatePresence>
-        {hearts.map(heart => (
-          <FloatingHeart
-            key={heart.id}
-            initial={{ y: heart.y, x: `${heart.x}%`, opacity: 1, scale: 0 }}
-            animate={{ 
-              y: -100, 
-              opacity: 0,
-              scale: [0, 1, 1, 0],
-              rotate: [0, 20, -20, 0]
-            }}
-            transition={{ duration: 3, ease: "easeOut" }}
-            exit={{ opacity: 0 }}
-          >
-            <FavoriteIcon />
-          </FloatingHeart>
-        ))}
-      </AnimatePresence>
+  const handleSubmit = () => {
+    setSnackbar({ open: true, message: 'Birthday wish sent successfully! 🎉' });
+    setOpenDialog(false);
+  };
 
-      {/* Sparkles */}
-      {sparkles.map(sparkle => (
-        <Sparkle
-          key={sparkle.id}
-          style={{
-            left: `${sparkle.x}%`,
-            top: `${sparkle.y}%`,
-          }}
-        />
-      ))}
-
-      {/* Confetti */}
-      {showConfetti && (
-        <Confetti
-          width={width}
-          height={height}
-          recycle={true}
-          numberOfPieces={300}
-          gravity={0.08}
-          colors={['#ff6b9d', '#ff8e53', '#6a11cb', '#2575fc', '#ffd166']}
-          style={{ position: 'fixed' }}
-        />
-      )}
-
-      <Container maxWidth="lg" sx={{ py: 8, position: 'relative', zIndex: 1 }}>
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-        >
-          <Box textAlign="center" mb={8}>
-            <Typography
-              variant="h1"
-              sx={{
-                fontSize: { xs: '2.8rem', md: '4.5rem' },
-                fontWeight: 900,
-                background: 'linear-gradient(135deg, #ff6b9d 0%, #ff8e53 50%, #ffd166 100%)',
-                backgroundSize: '200% 200%',
-                animation: `${gradientFlow} 3s ease infinite`,
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                mb: 2,
-                textShadow: '0 4px 30px rgba(255, 107, 157, 0.3)',
-              }}
-            >
-              💝 Birthday Love Letter 💝
+  const renderStepContent = (step: number) => {
+    switch (step) {
+      case 0:
+        return (
+          <Grid container spacing={3}>
+            <Grid size={{ xs: 12, md: 6 }}>
+              <TextField
+                fullWidth
+                label="Your Girlfriend's Name"
+                name="girlfriendName"
+                value={formData.girlfriendName}
+                onChange={handleChange}
+                required
+                variant="outlined"
+                helperText="Enter the special name 💖"
+                InputProps={{
+                  startAdornment: <Favorite sx={{ mr: 1, color: 'error.main' }} />,
+                }}
+              />
+            </Grid>
+            <Grid size={{ xs: 12, md: 6 }}>
+              <TextField
+                fullWidth
+                label="Your Name"
+                name="yourName"
+                value={formData.yourName}
+                onChange={handleChange}
+                required
+                variant="outlined"
+                helperText="Your name here 😊"
+              />
+            </Grid>
+            <Grid size={{ xs: 12, md: 6 }}>
+              <TextField
+                fullWidth
+                label="Years Together"
+                name="yearsTogether"
+                value={formData.yearsTogether}
+                onChange={handleChange}
+                type="number"
+                variant="outlined"
+                helperText="How many wonderful years?"
+                InputProps={{
+                  startAdornment: <Star sx={{ mr: 1, color: 'warning.main' }} />,
+                }}
+              />
+            </Grid>
+            <Grid size={{ xs: 12, md: 6 }}>
+              <TextField
+                fullWidth
+                label="Birthday Date"
+                name="date"
+                type="date"
+                value={formData.date}
+                onChange={handleChange}
+                variant="outlined"
+                InputLabelProps={{ shrink: true }}
+                helperText="Select the special date"
+              />
+            </Grid>
+            <Grid size={{ xs: 12 }}>
+              <TextField
+                fullWidth
+                label="Special Memory"
+                name="specialMemory"
+                value={formData.specialMemory}
+                onChange={handleChange}
+                multiline
+                rows={3}
+                variant="outlined"
+                helperText="Share a beautiful memory together"
+                placeholder="That time when we..."
+              />
+            </Grid>
+          </Grid>
+        );
+      
+      case 1:
+        return (
+          <Grid container spacing={3}>
+            <Grid size={{ xs: 12 }}>
+              <TextField
+                fullWidth
+                label="Your Birthday Message"
+                name="message"
+                value={formData.message}
+                onChange={handleChange}
+                multiline
+                rows={4}
+                variant="outlined"
+                helperText="Write from your heart 💌"
+                InputProps={{
+                  startAdornment: <EmojiEmotions sx={{ mr: 1, color: 'primary.main' }} />,
+                }}
+              />
+            </Grid>
+            <Grid size={{ xs: 12 }}>
+              <Typography variant="subtitle1" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <LocalFlorist /> Customize Your Wish
+              </Typography>
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mt: 2 }}>
+                <Chip
+                  icon={<MusicNote />}
+                  label="Background Music"
+                  color={wishData.showMusic ? 'primary' : 'default'}
+                  onClick={() => handleWishChange('showMusic', !wishData.showMusic)}
+                  variant={wishData.showMusic ? 'filled' : 'outlined'}
+                />
+                <Chip
+                  icon={<PhotoCamera />}
+                  label="Photo Gallery"
+                  color={wishData.showPhotos ? 'primary' : 'default'}
+                  onClick={() => handleWishChange('showPhotos', !wishData.showPhotos)}
+                  variant={wishData.showPhotos ? 'filled' : 'outlined'}
+                />
+                <Chip
+                  icon={<FlashOn />}
+                  label="Countdown"
+                  color={wishData.showCountdown ? 'primary' : 'default'}
+                  onClick={() => handleWishChange('showCountdown', !wishData.showCountdown)}
+                  variant={wishData.showCountdown ? 'filled' : 'outlined'}
+                />
+              </Box>
+            </Grid>
+          </Grid>
+        );
+      
+      case 2:
+        return (
+          <Box>
+            <Typography variant="h6" gutterBottom color="primary" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Celebration /> Preview Your Birthday Wish
             </Typography>
-            
-            <Typography
-              variant="h5"
-              sx={{
-                color: alpha(theme.palette.common.white, 0.8),
-                mb: 3,
-                fontWeight: 300,
-                letterSpacing: '1px',
-              }}
-            >
-              Create the most beautiful birthday message for your special someone
-            </Typography>
-
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 2 }}>
-              <CelebrationIcon sx={{ fontSize: 40, color: '#ff6b9d', animation: `${floatAnimation} 3s infinite` }} />
-              <StarsIcon sx={{ fontSize: 40, color: '#ff8e53', animation: `${floatAnimation} 3s infinite 0.5s` }} />
-              <SparklesIcon sx={{ fontSize: 40, color: '#ffd166', animation: `${floatAnimation} 3s infinite 1s` }} />
+            <Box sx={{ p: 2, border: `2px dashed ${theme.palette.primary.main}`, borderRadius: 2, mt: 2 }}>
+              <Typography variant="body1" paragraph>
+                Dear <strong>{formData.girlfriendName || '[Her Name]'}</strong>,
+              </Typography>
+              <Typography variant="body1" paragraph>
+                {formData.message}
+              </Typography>
+              {formData.specialMemory && (
+                <Typography variant="body2" color="text.secondary" paragraph sx={{ fontStyle: 'italic' }}>
+                  Remember when: {formData.specialMemory}
+                </Typography>
+              )}
+              <Typography variant="body1" paragraph>
+                With all my love,
+              </Typography>
+              <Typography variant="h6" color="primary">
+                {formData.yourName || '[Your Name]'}
+              </Typography>
             </Box>
           </Box>
-        </motion.div>
+        );
+      
+      default:
+        return null;
+    }
+  };
 
-        <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 4 }}>
-          {/* Input Form */}
-          <Box sx={{ flex: 1 }}>
-            <Slide direction="right" in={!isSubmitted} mountOnEnter unmountOnExit>
-              <GlassCard>
-                <CardContent sx={{ p: { xs: 3, md: 4 } }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 4 }}>
-                    <Avatar
-                      sx={{
-                        background: 'linear-gradient(135deg, #ff6b9d 0%, #ff8e53 100%)',
-                        width: 56,
-                        height: 56,
-                      }}
-                    >
-                      <FavoriteIcon />
+  const renderBirthdayWish = () => (
+    <Fade in={showWish} timeout={1000}>
+      <Box sx={{ textAlign: 'center', py: 4, position: 'relative', overflow: 'hidden' }}>
+        {/* Animated background elements */}
+        <FloatingHeart sx={{ top: 50, left: 50 }}>
+          <Favorite fontSize="large" />
+        </FloatingHeart>
+        <FloatingHeart sx={{ top: 100, right: 100, animationDelay: '1s' }}>
+          <Cake fontSize="large" />
+        </FloatingHeart>
+        <FloatingHeart sx={{ bottom: 150, left: 150, animationDelay: '2s' }}>
+          <Star fontSize="large" />
+        </FloatingHeart>
+
+        {/* Main content */}
+        <Grow in={showWish} timeout={1500}>
+          <Box>
+            <Typography
+              variant="h2"
+              component="h1"
+              gutterBottom
+              sx={{
+                background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                fontWeight: 'bold',
+                mb: 2,
+              }}
+            >
+              🎂 Happy Birthday! 🎉
+            </Typography>
+            
+            <Typography variant="h3" gutterBottom sx={{ color: 'primary.main', mb: 3 }}>
+              To My Beautiful {formData.girlfriendName} 💖
+            </Typography>
+
+            <Zoom in={showWish} timeout={2000}>
+              <Card sx={{ maxWidth: 600, mx: 'auto', mb: 4, borderRadius: 4 }}>
+                <Box sx={{ position: 'relative' }}>
+                  <CardMedia
+                    component="div"
+                    sx={{
+                      height: 200,
+                      background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.secondary.main} 100%)`,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <Typography variant="h4" sx={{ color: 'white', fontWeight: 'bold' }}>
+                      {new Date(formData.date).toLocaleDateString('en-US', {
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                      })}
+                    </Typography>
+                  </CardMedia>
+                  <Box
+                    sx={{
+                      position: 'absolute',
+                      top: -20,
+                      left: '50%',
+                      transform: 'translateX(-50%)',
+                      backgroundColor: 'white',
+                      borderRadius: '50%',
+                      padding: 2,
+                      boxShadow: 3,
+                    }}
+                  >
+                    <Avatar sx={{ width: 60, height: 60, bgcolor: 'primary.main' }}>
+                      <Cake fontSize="large" />
                     </Avatar>
-                    <Box>
-                      <Typography variant="h5" sx={{ color: 'white', fontWeight: 700 }}>
-                        Create Your Love Letter
-                      </Typography>
-                      <Typography variant="body2" sx={{ color: alpha(theme.palette.common.white, 0.7) }}>
-                        Fill in the details to create a magical message
+                  </Box>
+                </Box>
+                
+                <CardContent sx={{ pt: 6 }}>
+                  <Typography variant="h5" gutterBottom color="primary">
+                    My Dearest {formData.girlfriendName},
+                  </Typography>
+                  
+                  <Typography variant="body1" paragraph sx={{ fontSize: '1.1rem', lineHeight: 1.8 }}>
+                    On this special day, I want you to know how incredibly grateful I am to have you in my life.
+                    You bring so much joy, love, and happiness into my world every single day.
+                  </Typography>
+
+                  <Divider sx={{ my: 2 }} />
+                  
+                  <List>
+                    <ListItem>
+                      <ListItemIcon>
+                        <Favorite color="error" />
+                      </ListItemIcon>
+                      <ListItemText primary="Your smile lights up my world" />
+                    </ListItem>
+                    <ListItem>
+                      <ListItemIcon>
+                        <Star color="warning" />
+                      </ListItemIcon>
+                      <ListItemText primary="You make every moment magical" />
+                    </ListItem>
+                    <ListItem>
+                      <ListItemIcon>
+                        <EmojiEmotions color="primary" />
+                      </ListItemIcon>
+                      <ListItemText primary="Your happiness means everything to me" />
+                    </ListItem>
+                  </List>
+
+                  {formData.yearsTogether && (
+                    <Box sx={{ mt: 3, p: 2, bgcolor: 'action.hover', borderRadius: 2 }}>
+                      <Typography variant="h6" color="secondary">
+                        {formData.yearsTogether} amazing years together and counting! 💕
                       </Typography>
                     </Box>
+                  )}
+
+                  {formData.specialMemory && (
+                    <Box sx={{ mt: 3, p: 2, borderLeft: `4px solid ${theme.palette.primary.main}`, bgcolor: 'background.default' }}>
+                      <Typography variant="body1" sx={{ fontStyle: 'italic' }}>
+                        "Remember when {formData.specialMemory}"
+                      </Typography>
+                    </Box>
+                  )}
+
+                  <Box sx={{ mt: 4, p: 3, bgcolor: alpha(theme.palette.primary.light, 0.1), borderRadius: 3 }}>
+                    <Typography variant="h6" gutterBottom>
+                      {formData.message}
+                    </Typography>
                   </Box>
 
-                  <FormControl fullWidth sx={{ mb: 3 }}>
-                    <InputLabel sx={{ color: alpha(theme.palette.common.white, 0.8) }}>
-                      Who is this for?
-                    </InputLabel>
-                    <Select
-                      value={recipientType}
-                      onChange={(e) => setRecipientType(e.target.value)}
-                      label="Who is this for?"
-                      sx={{
-                        color: 'white',
-                        borderRadius: '16px',
-                        '& .MuiOutlinedInput-notchedOutline': {
-                          borderColor: alpha(theme.palette.common.white, 0.3),
-                          borderRadius: '16px',
-                        },
-                        '&:hover .MuiOutlinedInput-notchedOutline': {
-                          borderColor: alpha(theme.palette.common.white, 0.5),
-                        },
-                        '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                          borderColor: '#ff6b9d',
-                          borderWidth: '2px',
-                        },
-                      }}
-                      MenuProps={{
-                        PaperProps: {
-                          sx: {
-                            background: 'rgba(26, 26, 46, 0.95)',
-                            backdropFilter: 'blur(20px)',
-                            borderRadius: '16px',
-                            border: '1px solid rgba(255, 255, 255, 0.1)',
-                          },
-                        },
-                      }}
-                    >
-                      {recipientOptions.map((option) => (
-                        <MenuItem
-                          key={option.value}
-                          value={option.value}
-                          sx={{
-                            color: 'white',
-                            '&:hover': {
-                              background: alpha(option.color, 0.2),
-                            },
-                          }}
-                        >
-                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                            <Box sx={{ fontSize: '1.5rem' }}>{option.emoji}</Box>
-                            <Typography>{option.label}</Typography>
-                          </Box>
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
+                  <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mt: 4, flexWrap: 'wrap' }}>
+                    <Chip icon={<Restaurant />} label="Dinner Date" color="primary" variant="outlined" />
+                    <Chip icon={<LocalFlorist />} label="Flowers Delivery" color="secondary" variant="outlined" />
+                    <Chip icon={<CardGiftcard />} label="Special Gift" color="success" variant="outlined" />
+                  </Box>
 
-                  <TextField
-                    fullWidth
-                    label="Her Beautiful Name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    sx={{ mb: 3 }}
-                    InputProps={{
-                      sx: {
-                        color: 'white',
-                        borderRadius: '16px',
-                        '& .MuiOutlinedInput-notchedOutline': {
-                          borderColor: alpha(theme.palette.common.white, 0.3),
-                        },
-                        '&:hover .MuiOutlinedInput-notchedOutline': {
-                          borderColor: alpha(theme.palette.common.white, 0.5),
-                        },
-                        '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                          borderColor: '#ff6b9d',
-                          borderWidth: '2px',
-                        },
-                      },
-                    }}
-                    InputLabelProps={{
-                      sx: { color: alpha(theme.palette.common.white, 0.8) },
-                    }}
-                  />
+                  <Typography variant="h5" sx={{ mt: 4, mb: 2, color: 'secondary.main' }}>
+                    Forever Yours,
+                  </Typography>
+                  <Typography variant="h4" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
+                    {formData.yourName}
+                  </Typography>
 
-                  <TextField
-                    fullWidth
-                    label="Her Age (Just a number!)"
-                    type="number"
-                    value={age}
-                    onChange={(e) => setAge(e.target.value)}
-                    sx={{ mb: 3 }}
-                    InputProps={{
-                      sx: {
-                        color: 'white',
-                        borderRadius: '16px',
-                        '& .MuiOutlinedInput-notchedOutline': {
-                          borderColor: alpha(theme.palette.common.white, 0.3),
-                        },
-                        '&:hover .MuiOutlinedInput-notchedOutline': {
-                          borderColor: alpha(theme.palette.common.white, 0.5),
-                        },
-                        '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                          borderColor: '#ff6b9d',
-                          borderWidth: '2px',
-                        },
-                      },
-                    }}
-                    InputLabelProps={{
-                      sx: { color: alpha(theme.palette.common.white, 0.8) },
-                    }}
-                  />
-
-                  <TextField
-                    fullWidth
-                    label="Your Personal Message (Optional but special!)"
-                    multiline
-                    rows={4}
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                    sx={{ mb: 4 }}
-                    InputProps={{
-                      sx: {
-                        color: 'white',
-                        borderRadius: '16px',
-                        '& .MuiOutlinedInput-notchedOutline': {
-                          borderColor: alpha(theme.palette.common.white, 0.3),
-                        },
-                        '&:hover .MuiOutlinedInput-notchedOutline': {
-                          borderColor: alpha(theme.palette.common.white, 0.5),
-                        },
-                        '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                          borderColor: '#ff6b9d',
-                          borderWidth: '2px',
-                        },
-                      },
-                    }}
-                    InputLabelProps={{
-                      sx: { color: alpha(theme.palette.common.white, 0.8) },
-                    }}
-                  />
-
-                  <Box textAlign="center">
-                    <GradientButton
-                      onClick={generateRomanticMessage}
-                      disabled={!name || !age}
-                      startIcon={<SendIcon />}
-                      endIcon={<FavoriteIcon />}
-                      size="large"
-                    >
-                      Create Magical Message ✨
-                    </GradientButton>
-                    
-                    {(!name || !age) && (
-                      <Typography
-                        variant="caption"
-                        sx={{
-                          display: 'block',
-                          mt: 2,
-                          color: alpha(theme.palette.common.white, 0.6),
-                        }}
-                      >
-                        ✨ Enter her name and age to create something magical
-                      </Typography>
-                    )}
+                  <Box sx={{ mt: 4, display: 'flex', justifyContent: 'center', gap: 1 }}>
+                    {[1, 2, 3, 4, 5].map((i) => (
+                      <Favorite key={i} sx={{ color: 'error.main', fontSize: 40, animation: `pulse 1.${i}s infinite` }} />
+                    ))}
                   </Box>
                 </CardContent>
-              </GlassCard>
-            </Slide>
+              </Card>
+            </Zoom>
+
+            <ColorfulButton
+              onClick={() => setOpenDialog(true)}
+              endIcon={<Send />}
+              sx={{ mt: 2 }}
+            >
+              Send Birthday Wish
+            </ColorfulButton>
           </Box>
+        </Grow>
+      </Box>
+    </Fade>
+  );
 
-          {/* Message Display */}
-          <Box sx={{ flex: 1 }}>
-            <AnimatePresence mode="wait">
-              {isSubmitted ? (
-                <motion.div
-                  key="message"
-                  initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
-                  transition={{ duration: 0.5 }}
-                >
-                  <Box sx={{ position: 'relative' }}>
-                    <MessageDisplay elevation={0}>
-                      <Box sx={{ position: 'relative', zIndex: 2, width: '100%' }}>
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                            <Avatar
-                              sx={{
-                                background: 'linear-gradient(135deg, #ff6b9d 0%, #ff8e53 100%)',
-                                width: 50,
-                                height: 50,
-                              }}
-                            >
-                              <FavoriteIcon />
-                            </Avatar>
-                            <Box>
-                              <Typography variant="h6" sx={{ fontWeight: 700, color: '#ff6b9d' }}>
-                                💝 For {name} 💝
-                              </Typography>
-                              <Typography variant="body2" color="text.secondary">
-                                Happy {age}th Birthday
-                              </Typography>
-                            </Box>
-                          </Box>
-                          
-                          <IconButton
-                            onClick={() => setIsSubmitted(false)}
-                            sx={{
-                              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                              color: 'white',
-                              '&:hover': {
-                                transform: 'rotate(90deg)',
-                                transition: 'transform 0.3s',
-                              },
-                            }}
-                          >
-                            <EditIcon />
-                          </IconButton>
-                        </Box>
-
-                        <Divider sx={{ my: 2, borderColor: alpha(theme.palette.divider, 0.2) }} />
-
-                        <Box sx={{ p: 2 }}>
-                          <Typography
-                            sx={{
-                              whiteSpace: 'pre-line',
-                              fontSize: '1.1rem',
-                              lineHeight: 1.8,
-                              color: theme.palette.text.primary,
-                              fontFamily: "'Playfair Display', serif",
-                              textAlign: 'center',
-                            }}
-                          >
-                            {generatedMessage}
-                          </Typography>
-                        </Box>
-
-                        <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', mt: 4 }}>
-                          <Button
-                            variant="contained"
-                            onClick={handleCopy}
-                            startIcon={<ContentCopyIcon />}
-                            sx={{
-                              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                              borderRadius: '25px',
-                              px: 3,
-                              '&:hover': {
-                                transform: 'translateY(-2px)',
-                                boxShadow: '0 10px 25px rgba(102, 126, 234, 0.4)',
-                              },
-                            }}
-                          >
-                            {copied ? 'Copied! 💖' : 'Copy Message'}
-                          </Button>
-                          
-                          <Button
-                            variant="outlined"
-                            onClick={handleShare}
-                            startIcon={<ShareIcon />}
-                            sx={{
-                              borderColor: '#ff6b9d',
-                              color: '#ff6b9d',
-                              borderRadius: '25px',
-                              px: 3,
-                              '&:hover': {
-                                borderColor: '#ff8e53',
-                                background: alpha('#ff6b9d', 0.1),
-                              },
-                            }}
-                          >
-                            Share
-                          </Button>
-                        </Box>
-
-                        <Box textAlign="center" mt={4}>
-                          <Chip
-                            icon={<SparklesIcon />}
-                            label="✨ Magical Message Created ✨"
-                            sx={{
-                              background: alpha('#ff6b9d', 0.1),
-                              color: '#ff6b9d',
-                              fontWeight: 600,
-                              px: 2,
-                            }}
-                          />
-                        </Box>
-                      </Box>
-                    </MessageDisplay>
-
-                    {/* Decorative elements */}
-                    <Box
-                      sx={{
-                        position: 'absolute',
-                        top: -20,
-                        right: -20,
-                        width: 100,
-                        height: 100,
-                        background: 'radial-gradient(circle, rgba(255,107,157,0.2) 0%, transparent 70%)',
-                        borderRadius: '50%',
-                        animation: `${pulseGlow} 3s infinite`,
-                      }}
-                    />
-                  </Box>
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="placeholder"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                >
-                  <GlassCard sx={{ height: '100%' }}>
-                    <CardContent sx={{ 
-                      height: '100%', 
-                      display: 'flex', 
-                      flexDirection: 'column', 
-                      alignItems: 'center', 
-                      justifyContent: 'center',
-                      py: 8 
-                    }}>
-                      <Box sx={{ 
-                        width: 120, 
-                        height: 120, 
-                        borderRadius: '50%',
-                        background: 'linear-gradient(135deg, rgba(255,107,157,0.1) 0%, rgba(255,142,83,0.1) 100%)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        mb: 4,
-                        animation: `${pulseGlow} 2s infinite`,
-                      }}>
-                        <HeartBrokenIcon sx={{ fontSize: 60, color: alpha('#ff6b9d', 0.5) }} />
-                      </Box>
-                      
-                      <Typography variant="h5" sx={{ color: 'white', mb: 2, textAlign: 'center' }}>
-                        Your Love Letter Awaits ✨
-                      </Typography>
-                      
-                      <Typography sx={{ 
-                        color: alpha(theme.palette.common.white, 0.7), 
-                        textAlign: 'center',
-                        maxWidth: 400 
-                      }}>
-                        Fill in the details about your special someone to create a beautiful, 
-                        personalized birthday message that will make her heart melt 💖
-                      </Typography>
-                    </CardContent>
-                  </GlassCard>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </Box>
-        </Box>
-
-        {/* Footer */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1, duration: 1 }}
+  return (
+    <Container maxWidth="lg" sx={{ py: 4 }}>
+      {/* Header */}
+      <Box sx={{ textAlign: 'center', mb: 6 }}>
+        <Typography
+          variant="h3"
+          component="h1"
+          gutterBottom
+          sx={{
+            fontWeight: 'bold',
+            background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 2,
+          }}
         >
-          <Box textAlign="center" mt={8}>
-            <Typography variant="body2" sx={{ color: alpha(theme.palette.common.white, 0.5) }}>
-              Made with 💖 • Every message is uniquely generated with love
-            </Typography>
-            <Typography variant="caption" sx={{ color: alpha(theme.palette.common.white, 0.3), display: 'block', mt: 1 }}>
-              She'll absolutely love it! Promise 😉
-            </Typography>
+          <Celebration fontSize="large" />
+          Birthday Wishes Creator
+          <Celebration fontSize="large" />
+        </Typography>
+        <Typography variant="h6" color="text.secondary">
+          Create a magical birthday surprise for your special someone ✨
+        </Typography>
+      </Box>
+
+      {!showWish ? (
+        <>
+          {/* Stepper */}
+          <Stepper activeStep={activeStep} sx={{ mb: 4 }}>
+            {steps.map((label) => (
+              <Step key={label}>
+                <StepLabel>{label}</StepLabel>
+              </Step>
+            ))}
+          </Stepper>
+
+          {/* Form Section */}
+          <AnimatedPaper elevation={3}>
+            {renderStepContent(activeStep)}
+            
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 4 }}>
+              <Button
+                disabled={activeStep === 0}
+                onClick={handleBack}
+                startIcon={<ArrowForward sx={{ transform: 'rotate(180deg)' }} />}
+              >
+                Back
+              </Button>
+              <ColorfulButton
+                onClick={handleNext}
+                endIcon={activeStep === steps.length - 1 ? <Celebration /> : <ArrowForward />}
+              >
+                {activeStep === steps.length - 1 ? 'Create Birthday Wish' : 'Next'}
+              </ColorfulButton>
+            </Box>
+          </AnimatedPaper>
+        </>
+      ) : (
+        renderBirthdayWish()
+      )}
+
+      {/* Preview Dialog */}
+      <Dialog open={openDialog} onClose={() => setOpenDialog(false)} maxWidth="md" fullWidth>
+        <DialogTitle>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <Typography variant="h6">Your Birthday Wish is Ready! 🎁</Typography>
+            <IconButton onClick={() => setOpenDialog(false)}>
+              <Close />
+            </IconButton>
           </Box>
-        </motion.div>
-      </Container>
-    </Box>
+        </DialogTitle>
+        <DialogContent>
+          <Box sx={{ p: 2 }}>
+            <Typography variant="body1" paragraph>
+              Your beautiful birthday wish for <strong>{formData.girlfriendName}</strong> is ready to be shared!
+            </Typography>
+            <List>
+              <ListItem>
+                <ListItemIcon>
+                  <FavoriteBorder color="error" />
+                </ListItemIcon>
+                <ListItemText primary="Personalized message" secondary="Tailored specifically for her" />
+              </ListItem>
+              <ListItem>
+                <ListItemIcon>
+                  <Cake color="primary" />
+                </ListItemIcon>
+                <ListItemText primary="Birthday date" secondary={new Date(formData.date).toLocaleDateString()} />
+              </ListItem>
+              <ListItem>
+                <ListItemIcon>
+                  <Star color="warning" />
+                </ListItemIcon>
+                <ListItemText 
+                  primary="Special features" 
+                  secondary={`Music: ${wishData.showMusic ? 'Yes' : 'No'}, Photos: ${wishData.showPhotos ? 'Yes' : 'No'}`} 
+                />
+              </ListItem>
+            </List>
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenDialog(false)}>Edit More</Button>
+          <ColorfulButton onClick={handleSubmit} startIcon={<Send />}>
+            Send to {formData.girlfriendName}
+          </ColorfulButton>
+        </DialogActions>
+      </Dialog>
+
+      {/* Snackbar */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert
+          onClose={() => setSnackbar({ ...snackbar, open: false })}
+          severity="success"
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
+
+      {/* Footer */}
+      <Box sx={{ textAlign: 'center', mt: 8, pt: 4, borderTop: `1px solid ${theme.palette.divider}` }}>
+        <Typography variant="body2" color="text.secondary">
+          Made with <Favorite sx={{ color: 'error.main', fontSize: 14, verticalAlign: 'middle' }} /> for your special someone
+        </Typography>
+        <Typography variant="caption" color="text.secondary">
+          Every day with you is a celebration 💝
+        </Typography>
+      </Box>
+    </Container>
   );
 }
